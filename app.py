@@ -82,7 +82,7 @@ if "users" not in st.session_state:
 # App Logo and Title
 col1, col2 = st.columns([1, 4])
 with col1:
-    st.image("https://via.placeholder.com/100", width=100)  # Replace with your logo URL
+    st.image("./assets/logo.png", width=100)  # Replace with your logo URL
 with col2:
     st.markdown("<h1 style='color: #2c3e50;'>🌟 Mindset Mastery</h1>", unsafe_allow_html=True)
 
@@ -180,12 +180,23 @@ if name:
 
     # Leaderboard (Top Learners)
     st.markdown("<div class='card'><h2 style='color: #2c3e50;'>🏆 Top Learners Leaderboard</h2>", unsafe_allow_html=True)
-    df = pd.DataFrame.from_dict(st.session_state.users, orient="index")
-    df = df.sort_values(by=["effort", "learning"], ascending=False)
+    
+    # Flatten the data for the leaderboard
+    leaderboard_data = []
+    for user, data in st.session_state.users.items():
+        leaderboard_data.append({
+            "Name": user,
+            "Effort": data["effort"],
+            "Learning": data["learning"],
+            "Mood": data["mood"],
+        })
+    
+    df = pd.DataFrame(leaderboard_data)
+    df = df.sort_values(by=["Effort", "Learning"], ascending=False)
     st.table(df)
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Progress Graph
     st.markdown("<div class='card'><h2 style='color: #2c3e50;'>📊 Learning Progress Chart</h2>", unsafe_allow_html=True)
-    st.line_chart(df[["effort", "learning"]])
+    st.line_chart(df.set_index("Name")[["Effort", "Learning"]])
     st.markdown("</div>", unsafe_allow_html=True)
